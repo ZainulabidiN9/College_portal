@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Profile | Institute Portal</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'portal.css' %}?v=3">
+  </head>
+  <body class="portal-page">
+    <main class="portal-shell">
+      <header class="profile-hero">
+        <div class="profile-hero-content">
+          <h1>User Profile</h1>
+          <p>Welcome back, {{ user.username }}.</p>
+        </div>
+        <a href="{% url 'logout' %}" class="portal-link portal-link-light profile-logout">Logout</a>
+      </header>
+
+      <section class="profile-details" aria-label="Account details">
+        <p class="profile-detail">
+          <span class="profile-detail-label">Username:</span>
+          <span class="profile-detail-value">{{ user.username }}</span>
+        </p>
+        <p class="profile-detail">
+          <span class="profile-detail-label">Email address:</span>
+          <span class="profile-detail-value">{{ user.email|default:'Not added yet' }}</span>
+        </p>
+      </section>
+
+      <section class="portal-card profile-attendance" aria-labelledby="results-heading">
+        <div class="profile-section-heading">
+          <div>
+            <h2 id="results-heading">Results</h2>
+            <p>Your marks and examination results.</p>
+          </div>
+          <a href="{% url 'results' %}" class="portal-link">View All</a>
+        </div>
+
+        {% if result_records %}
+        <div class="portal-table-wrap">
+          <table class="portal-table">
+            <thead>
+              <tr><th>Course</th><th>Total Marks</th><th>Obtained</th><th>Percentage</th><th>Grade</th></tr>
+            </thead>
+            <tbody>
+              {% for result in result_records %}
+              <tr>
+                <td>{{ result.course.name }}</td>
+                <td>{{ result.total_marks }}</td>
+                <td>{{ result.obtained_marks }}</td>
+                <td>{{ result.percentage }}%</td>
+                <td>{{ result.grade }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="portal-empty">No results recorded yet.</p>
+        {% endif %}
+      </section>
+
+      <section class="portal-card profile-attendance" aria-labelledby="attendance-heading">
+        <div class="profile-section-heading">
+          <div>
+            <h2 id="attendance-heading">Attendance Details</h2>
+            <p>Your attendance records and recording times.</p>
+          </div>
+          <a href="{% url 'attendance' %}" class="portal-link">View All</a>
+        </div>
+
+        <p class="profile-detail">
+          <span class="profile-detail-label">Current date and time:</span>
+          <span class="profile-detail-value">{{ current_time|date:"d M Y, h:i A" }}</span>
+        </p>
+
+        {% if attendance_records %}
+        <div class="portal-table-wrap">
+          <table class="portal-table">
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Present</th>
+                <th>Absent</th>
+                <th>Recorded</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in attendance_records %}
+              <tr>
+                <td>{{ record.course.name }}</td>
+                <td>{{ record.present_classes }} / {{ record.total_classes }}</td>
+                <td>{{ record.absent_classes }}</td>
+                <td>{{ record.recorded_at|date:"d M Y, h:i A" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="portal-empty">No attendance details recorded yet.</p>
+        {% endif %}
+      </section>
+
+      <section class="portal-card profile-attendance" aria-labelledby="activity-heading">
+        <div class="profile-section-heading">
+          <div>
+            <h2 id="activity-heading">Login Activity</h2>
+            <p>Your recent login and signup records.</p>
+          </div>
+        </div>
+
+        {% if auth_activities %}
+        <div class="portal-table-wrap">
+          <table class="portal-table">
+            <thead>
+              <tr><th>Action</th><th>Date and time</th></tr>
+            </thead>
+            <tbody>
+              {% for activity in auth_activities %}
+              <tr>
+                <td>{{ activity.get_action_display }}</td>
+                <td>{{ activity.created_at|date:"d M Y, h:i A" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="portal-empty">No login activity recorded yet.</p>
+        {% endif %}
+      </section>
+
+      <nav class="portal-nav profile-nav" aria-label="Portal sections">
+        <a href="{% url 'courses' %}" class="btn btn-primary">View Courses</a>
+        <a href="{% url 'attendance' %}" class="portal-link">View Attendance</a>
+        <a href="{% url 'results' %}" class="portal-link">View Results</a>
+        <a href="{% url 'timetable' %}" class="portal-link">View Timetable</a>
+        {% if can_manage_records %}
+        <a href="{% url 'add_course' %}" class="btn btn-success">Add Course</a>
+        {% endif %}
+      </nav>
+    </main>
+  </body>
+</html>

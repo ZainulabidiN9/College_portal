@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Student Dashboard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'portal.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  </head>
+  <body class="portal-page">
+    <main class="portal-shell">
+      <header class="portal-header">
+        <div>
+          <h1>Student Dashboard</h1>
+          <p>Your academic overview at a glance.</p>
+        </div>
+        <a href="{% url 'logout' %}" class="portal-link portal-link-light">Logout</a>
+      </header>
+
+      <nav class="portal-grid">
+        <a href="{% url 'courses' %}" class="portal-card portal-link">
+    View Courses
+        </a>
+
+        <a href="{% url 'attendance' %}" class="portal-card portal-link">
+    View Attendance
+        </a>
+
+        <a href="{% url 'results' %}" class="portal-card portal-link">
+    View Results
+        </a>
+
+        <a href="{% url 'timetable' %}" class="portal-card portal-link">
+    View Timetable
+        </a>
+
+      </nav>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  </body>
+</html>

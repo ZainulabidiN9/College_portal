@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Attendance | Institute Portal</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'portal.css' %}?v=4">
+</head>
+<body class="portal-page attendance-page">
+<main class="portal-shell">
+    <header class="portal-header attendance-header">
+        <div>
+            <h1>Attendance</h1>
+            <p>Keep track of your class participation.</p>
+        </div>
+        <div class="course-header-actions">
+            {% if can_manage_records %}
+            <a href="{% url 'add_attendance' %}" class="portal-link portal-link-light">Add Attendance</a>
+            {% endif %}
+            <a href="{% url 'profile' %}" class="portal-link portal-link-light">Back to Dashboard</a>
+        </div>
+    </header>
+    <div class="portal-table-wrap attendance-table-wrap">
+        <table class="portal-table attendance-table">
+            <thead>
+                <tr><th>#</th>{% if can_manage_records %}<th>Student</th>{% endif %}<th>Course</th> <th>Total Classes</th><th>Present</th><th>Absent</th><th>Percentage</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+
+    {% for record in attendance_records %}
+
+    <tr>
+
+        <td>
+            {{ forloop.counter }}
+        </td>
+
+        {% if can_manage_records %}
+        <td data-label="Student">
+            {{ record.student.username }}
+        </td>
+        {% endif %}
+
+        <td data-label="Course" class="attendance-course">
+            {{ record.course.name }}
+        </td>
+
+        <td data-label="Total classes" class="attendance-number">
+            {{ record.total_classes }}
+        </td>
+
+        <td data-label="Present" class="attendance-number">
+            {{ record.present_classes }}
+        </td>
+
+        <td data-label="Absent" class="attendance-number">
+            {{ record.absent_classes }}
+        </td>
+
+        <td data-label="Attendance">
+
+            {% if record.percentage >= 75 %}
+
+                <div class="attendance-score">
+                    <span class="portal-badge">{{ record.percentage }}%</span>
+                    <span class="attendance-meter" style="--attendance-score: {{ record.percentage }}%;"></span>
+                </div>
+
+            {% else %}
+
+                <div class="attendance-score">
+                    <span class="portal-badge portal-badge-warning">{{ record.percentage }}%</span>
+                    <span class="attendance-meter" style="--attendance-score: {{ record.percentage }}%;"></span>
+                </div>
+
+            {% endif %}
+
+        </td>
+
+        <td data-label="Actions" class="record-actions">
+            {% if can_manage_records %}
+            <a href="{% url 'edit_attendance' record.id %}" class="portal-link record-action-update">Update</a>
+            <form method="post" action="{% url 'delete_attendance' record.id %}" onsubmit="return confirm('Are you sure you want to delete this attendance record?');">
+                {% csrf_token %}
+                <button type="submit" class="portal-button record-action-delete">Delete</button>
+            </form>
+            {% else %}
+            <span>View only</span>
+            {% endif %}
+        </td>
+
+    </tr>
+
+    {% empty %}
+
+    <tr>
+        <td colspan="8" class="portal-empty">
+            No attendance record available.
+        </td>
+    </tr>
+
+    {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</main>
+
+
+</body>
+</html>

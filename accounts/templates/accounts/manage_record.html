@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }} | Institute Portal</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'portal.css' %}">
+</head>
+<body class="portal-page">
+<main class="portal-shell">
+    <header class="portal-header">
+        <div>
+            <h1>{{ title }}</h1>
+            <p>Enter the details below and save your changes.</p>
+        </div>
+        <a href="{% url back_url %}" class="portal-link portal-link-light">Back</a>
+    </header>
+
+    <section class="portal-card record-form-card">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="record-form-actions">
+                <button type="submit" class="portal-button">{{ submit_label }}</button>
+                <a href="{% url back_url %}" class="portal-link">Cancel</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>
