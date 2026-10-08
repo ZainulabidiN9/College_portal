@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Students | Institute Portal</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'portal.css' %}">
+  </head>
+  <body class="dashboard-page">
+    <div class="dashboard-layout">
+      <aside class="dashboard-sidebar" aria-label="Main navigation">
+        <a href="{% url 'dashboard' %}" class="dashboard-brand">
+          <span class="brand-mark" aria-hidden="true">CP</span>
+          <span><strong>Campus</strong><small>INSTITUTE PORTAL</small></span>
+        </a>
+        <p class="sidebar-label">Workspace</p>
+        <nav class="sidebar-nav">
+          <a href="{% url 'dashboard' %}" class="sidebar-link"><span class="sidebar-icon" aria-hidden="true">OV</span>Overview</a>
+          <a href="{% url 'student_directory' %}" class="sidebar-link is-active" aria-current="page"><span class="sidebar-icon" aria-hidden="true">ST</span>Students</a>
+          <a href="{% url 'courses' %}" class="sidebar-link"><span class="sidebar-icon" aria-hidden="true">CR</span>Courses</a>
+          <a href="{% url 'attendance' %}" class="sidebar-link"><span class="sidebar-icon" aria-hidden="true">AT</span>Attendance</a>
+          <a href="{% url 'results' %}" class="sidebar-link"><span class="sidebar-icon" aria-hidden="true">RS</span>Results</a>
+          <a href="{% url 'timetable' %}" class="sidebar-link"><span class="sidebar-icon" aria-hidden="true">TT</span>Timetable</a>
+        </nav>
+        <div class="sidebar-spacer"></div>
+        <div class="sidebar-account">
+          <div class="account-avatar" aria-hidden="true">{{ request.user.username|first|upper }}</div>
+          <div class="account-copy"><strong>{{ request.user.get_full_name|default:request.user.username }}</strong><small>{% if request.user.is_superuser %}Administrator{% else %}Teacher{% endif %}</small></div>
+          <a class="account-exit" href="{% url 'logout' %}" aria-label="Log out" title="Log out">↗</a>
+        </div>
+      </aside>
+
+      <main class="dashboard-main">
+        <header class="dashboard-topbar">
+          <div class="topbar-context"><span>PORTAL</span><span aria-hidden="true">/</span><strong>Students</strong></div>
+          <a class="topbar-profile" href="{% url 'profile' %}"><span class="profile-dot" aria-hidden="true"></span><span>{{ request.user.get_full_name|default:request.user.username }}</span></a>
+        </header>
+
+        <div class="directory-content">
+          <section class="directory-heading">
+            <div>
+              <p class="eyebrow">STUDENT RECORDS</p>
+              <h1>Student directory</h1>
+              <p>Search and review registered students and their academic summaries.</p>
+            </div>
+            <a class="heading-action" href="{% url 'dashboard' %}">← Back to overview</a>
+          </section>
+
+          <section class="directory-toolbar" aria-label="Student search and count">
+            <div class="directory-count"><strong>{{ student_count }}</strong><span>registered students</span></div>
+            <form class="student-search" method="get" action="{% url 'student_directory' %}" role="search">
+              <label class="visually-hidden" for="student-search-input">Search by name, username, or email</label>
+              <input id="student-search-input" type="search" name="q" value="{{ search_query }}" placeholder="Search name, username, or email" autocomplete="off">
+              <button type="submit">Search</button>
+              {% if search_query %}<a class="search-clear" href="{% url 'student_directory' %}">Clear</a>{% endif %}
+            </form>
+          </section>
+
+          <section class="directory-table-panel" aria-label="Student records">
+            <div class="directory-table-heading">
+              <h2>{% if search_query %}Search results{% else %}All students{% endif %}</h2>
+              <span>{{ result_count }} result{{ result_count|pluralize }}</span>
+            </div>
+            {% if students %}
+              <div class="directory-table-wrap">
+                <table class="directory-table">
+                  <thead>
+                    <tr><th scope="col">Student</th><th scope="col">Email</th><th scope="col">Courses</th><th scope="col">Attendance</th><th scope="col">Average score</th><th scope="col">Joined</th></tr>
+                  </thead>
+                  <tbody>
+                    {% for row in students %}
+                      <tr>
+                        <td data-label="Student"><span class="directory-student"><span class="directory-avatar" aria-hidden="true">{{ row.student.username|first|upper }}</span><span><strong>{{ row.student.get_full_name|default:row.student.username }}</strong><small>@{{ row.student.username }}</small></span></span></td>
+                        <td data-label="Email">{{ row.student.email|default:'—' }}</td>
+                        <td data-label="Courses">{{ row.course_count }}</td>
+                        <td data-label="Attendance">{% if row.attendance_percentage != None %}{{ row.attendance_percentage }}%{% else %}—{% endif %}</td>
+                        <td data-label="Average score">{% if row.average_score != None %}{{ row.average_score }}%{% else %}—{% endif %}</td>
+                        <td data-label="Joined">{{ row.student.date_joined|date:'M j, Y' }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% if page_obj.paginator.num_pages > 1 %}
+                <nav class="directory-pagination" aria-label="Student pages">
+                  <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                  <div>
+                    {% if page_obj.has_previous %}<a href="?q={{ search_query|urlencode }}&page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+                    {% if page_obj.has_next %}<a href="?q={{ search_query|urlencode }}&page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+                  </div>
+                </nav>
+              {% endif %}
+            {% else %}
+              <div class="directory-empty">
+                <strong>{% if search_query %}No students match “{{ search_query }}”{% else %}No students registered yet{% endif %}</strong>
+                <p>{% if search_query %}Try searching with a different name, username, or email.{% else %}Students who sign up will appear in this directory.{% endif %}</p>
+              </div>
+            {% endif %}
+          </section>
+          <footer class="dashboard-footer"><span>Institute Portal</span><span>Student directory</span></footer>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
