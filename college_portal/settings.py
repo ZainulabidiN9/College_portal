@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/6.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
-
+import dj_database_url
 from pathlib import Path
 import os
 from django.core.exceptions import ImproperlyConfigured
@@ -30,7 +30,11 @@ if not SECRET_KEY:
         raise ImproperlyConfigured('Set DJANGO_SECRET_KEY in the production environment.')
     SECRET_KEY = 'dev-only-change-me'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
+ALLOWED_HOSTS = [
+    'college-portal-6zhx.vercel.app',
+    'localhost',
+    '127.0.0.1',
+]
 ALLOWED_HOSTS.extend(
     host.strip()
     for host in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
@@ -109,7 +113,7 @@ DATABASES = {
 }
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
-    import dj_database_url
+    
 
     DATABASES['default'] = dj_database_url.parse(
         DATABASE_URL,
@@ -196,3 +200,7 @@ MAILERS = {
         } if not DEBUG else {},
     },
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://college-portal-6zhx.vercel.app',
+]
