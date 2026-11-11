@@ -22,3 +22,4 @@ The repository includes a Render Blueprint in `render.yaml`. In Render, create a
 The build installs `requirements.txt` and collects static files. The start command applies database migrations and runs Gunicorn. To enable email delivery, also set `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, and `EMAIL_USE_TLS` to the values from your SMTP provider.
 
 The web service is configured for Render's free web tier, which may spin down when idle. Choose a persistent PostgreSQL plan appropriate for the student records and review Render's current pricing and retention terms before provisioning it.
+# ST-Portal
