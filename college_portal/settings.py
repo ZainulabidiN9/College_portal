@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import dj_database_url
 from pathlib import Path
 import os
+from typing import Any, cast
 from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -113,12 +114,13 @@ DATABASES = {
 }
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
-    
-
-    DATABASES['default'] = dj_database_url.parse(
-        DATABASE_URL,
-        conn_max_age=600,
-        ssl_require=not DEBUG,
+    DATABASES['default'] = cast(
+        dict[str, Any],
+        dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=not DEBUG,
+        ),
     )
 elif not DEBUG:
     raise ImproperlyConfigured('Set DATABASE_URL to a persistent PostgreSQL database in production.')
@@ -201,6 +203,4 @@ MAILERS = {
     },
 }
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://college-portal-6zhx.vercel.app',
-]
+CSRF_TRUSTED_ORIGINS.append('https://college-portal-6zhx.vercel.app')
